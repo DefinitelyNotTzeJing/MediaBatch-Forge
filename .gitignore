@@ -1,0 +1,16 @@
+# Source media and generated output
+USB/*
+done/*
+
+# Keep the required directory structure in the repository
+!USB/.gitkeep
+!done/.gitkeep
+
+# Windows metadata
+Thumbs.db
+Desktop.ini
+
+# Temporary and log files
+*.tmp
+*.log
+
