@@ -7,8 +7,26 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $projectRoot = $PSScriptRoot
-$inputRoot = Join-Path $projectRoot 'USB'
-$outputRoot = Join-Path $projectRoot 'done'
+$configPath = Join-Path $projectRoot 'paths.json'
+if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) {
+    throw "Configuration file not found: $configPath"
+}
+
+$paths = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
+if (-not $paths.inputFolder -or -not $paths.outputFolder) {
+    throw 'paths.json must define both inputFolder and outputFolder.'
+}
+
+$inputRoot = if ([System.IO.Path]::IsPathRooted($paths.inputFolder)) {
+    $paths.inputFolder
+} else {
+    Join-Path $projectRoot $paths.inputFolder
+}
+$outputRoot = if ([System.IO.Path]::IsPathRooted($paths.outputFolder)) {
+    $paths.outputFolder
+} else {
+    Join-Path $projectRoot $paths.outputFolder
+}
 $supportedExtensions = @('.hevc', '.h265', '.mp4', '.m4v', '.mov', '.mkv', '.avi', '.ts', '.mts', '.m2ts')
 
 if (-not (Test-Path -LiteralPath $inputRoot -PathType Container)) {
